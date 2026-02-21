@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 const sampleBooks = [
   { id: 1, title: "The Great Gatsby", author: "F. Scott Fitzgerald", category: "Classic", price: 12.99, cover: "https://covers.openlibrary.org/b/id/8226191-L.jpg" },
@@ -54,6 +54,35 @@ const sampleBooks = [
 ];
 
 const BookList = () => {
+  const [cart, setCart] = useState([]);
+
+  // Load cart from localStorage on mount
+  useEffect(() => {
+    const storedCart = localStorage.getItem("cart");
+    if (storedCart) {
+      setCart(JSON.parse(storedCart));
+    }
+  }, []);
+
+  // Save cart to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }, [cart]);
+
+  const handleAddToCart = (book) => {
+    // Prevent duplicates, add quantity if needed
+    setCart((prevCart) => {
+      const exists = prevCart.find((item) => item.id === book.id);
+      if (exists) {
+        return prevCart.map((item) =>
+          item.id === book.id ? { ...item, quantity: (item.quantity || 1) + 1 } : item
+        );
+      } else {
+        return [...prevCart, { ...book, quantity: 1 }];
+      }
+    });
+  };
+
   return (
     <div style={{ padding: "24px" }}>
       <h2>Available Books</h2>
@@ -68,6 +97,8 @@ const BookList = () => {
               padding: "16px",
               background: "#fff",
               boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+              position: "relative",
+              minHeight: "320px"
             }}
           >
             <img
@@ -81,6 +112,23 @@ const BookList = () => {
               ${book.price.toFixed(2)}
             </p>
             <p style={{ margin: "0", color: "#52C41A" }}>{book.category}</p>
+            <button
+              style={{
+                position: "absolute",
+                right: "16px",
+                bottom: "16px",
+                padding: "8px 16px",
+                background: "#007bff",
+                color: "#fff",
+                border: "none",
+                borderRadius: "4px",
+                cursor: "pointer",
+                boxShadow: "0 2px 6px rgba(0,0,0,0.1)"
+              }}
+              onClick={() => handleAddToCart(book)}
+            >
+              Add
+            </button>
           </div>
         ))}
       </div>
