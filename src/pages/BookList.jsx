@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useContext } from "react";
+import { CartContext } from "../CartContext.jsx";
 
 const sampleBooks = [
   { id: 1, title: "The Great Gatsby", author: "F. Scott Fitzgerald", category: "Classic", price: 12.99, cover: "https://covers.openlibrary.org/b/id/8226191-L.jpg" },
@@ -54,23 +55,9 @@ const sampleBooks = [
 ];
 
 const BookList = () => {
-  const [cart, setCart] = useState([]);
-
-  // Load cart from localStorage on mount
-  useEffect(() => {
-    const storedCart = localStorage.getItem("cart");
-    if (storedCart) {
-      setCart(JSON.parse(storedCart));
-    }
-  }, []);
-
-  // Save cart to localStorage whenever it changes
-  useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cart));
-  }, [cart]);
+  const { cart, setCart } = useContext(CartContext);
 
   const handleAddToCart = (book) => {
-    // Prevent duplicates, add quantity if needed
     setCart((prevCart) => {
       const exists = prevCart.find((item) => item.id === book.id);
       if (exists) {
@@ -112,23 +99,41 @@ const BookList = () => {
               ${book.price.toFixed(2)}
             </p>
             <p style={{ margin: "0", color: "#52C41A" }}>{book.category}</p>
-            <button
-              style={{
-                position: "absolute",
-                right: "16px",
-                bottom: "16px",
-                padding: "8px 16px",
-                background: "#007bff",
-                color: "#fff",
-                border: "none",
-                borderRadius: "4px",
-                cursor: "pointer",
-                boxShadow: "0 2px 6px rgba(0,0,0,0.1)"
-              }}
-              onClick={() => handleAddToCart(book)}
-            >
-              Add
-            </button>
+            <div style={{ position: "absolute", right: "16px", bottom: "16px", display: "flex", alignItems: "center" }}>
+              <button
+                style={{
+                  padding: "8px 16px",
+                  background: "#007bff",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                  boxShadow: "0 2px 6px rgba(0,0,0,0.1)"
+                }}
+                onClick={() => handleAddToCart(book)}
+              >
+                Add
+              </button>
+              {(() => {
+                const cartItem = cart.find((item) => item.id === book.id);
+                if (cartItem && cartItem.quantity > 0) {
+                  return (
+                    <span style={{
+                      marginLeft: "8px",
+                      background: "#52C41A",
+                      color: "white",
+                      borderRadius: "12px",
+                      padding: "2px 10px",
+                      fontSize: "1rem",
+                      fontWeight: "bold"
+                    }}>
+                      x{cartItem.quantity}
+                    </span>
+                  );
+                }
+                return null;
+              })()}
+            </div>
           </div>
         ))}
       </div>

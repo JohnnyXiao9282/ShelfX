@@ -1,14 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useContext } from "react";
+import { CartContext } from "../CartContext.jsx";
 
 const Cart = () => {
-  const [cart, setCart] = useState([]);
-
-  useEffect(() => {
-    const storedCart = localStorage.getItem("cart");
-    if (storedCart) {
-      setCart(JSON.parse(storedCart));
-    }
-  }, []);
+  const { cart } = useContext(CartContext);
 
   return (
     <div style={{ padding: "24px" }}>
@@ -34,13 +28,25 @@ const Cart = () => {
                 alt={book.title}
                 style={{ width: "100%", height: "auto", borderRadius: "4px" }}
               />
-              <h3 style={{ margin: "12px 0 4px 0" }}>{book.title}</h3>
+              <div style={{ display: "flex", alignItems: "center", margin: "12px 0 4px 0" }}>
+                <h3 style={{ margin: 0 }}>{book.title}</h3>
+                <span style={{
+                  marginLeft: "8px",
+                  background: "#52C41A",
+                  color: "white",
+                  borderRadius: "12px",
+                  padding: "2px 10px",
+                  fontSize: "1rem",
+                  fontWeight: "bold"
+                }}>
+                  x{book.quantity || 1}
+                </span>
+              </div>
               <p style={{ margin: "0", color: "#888" }}>by {book.author}</p>
               <p style={{ margin: "8px 0", fontWeight: "bold" }}>
                 ${book.price.toFixed(2)}
               </p>
               <p style={{ margin: "0", color: "#52C41A" }}>{book.category}</p>
-              <p style={{ margin: "8px 0 0 0", fontWeight: "bold" }}>Quantity: {book.quantity || 1}</p>
             </div>
           ))}
         </div>
