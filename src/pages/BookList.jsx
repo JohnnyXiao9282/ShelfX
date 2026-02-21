@@ -86,6 +86,8 @@ const BookList = () => {
               boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
               position: "relative",
               minHeight: "320px"
+              position: "relative",
+              minHeight: "320px"
             }}
           >
             <img
