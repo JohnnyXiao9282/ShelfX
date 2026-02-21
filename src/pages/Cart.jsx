@@ -1,9 +1,11 @@
 import React, { useContext, useState } from "react";
 import { CartContext } from "../CartContext.jsx";
+import { useNavigate } from "react-router-dom";
 
 const Cart = () => {
   const { cart } = useContext(CartContext);
   const [selected, setSelected] = useState([]);
+  const navigate = useNavigate();
 
   // Handle selection toggle
   const handleSelect = (id) => {
@@ -108,9 +110,28 @@ const Cart = () => {
               borderRadius: "8px",
               boxShadow: "0 2px 8px rgba(0,0,0,0.10)",
               padding: "16px 24px",
-              zIndex: 1002
+              zIndex: 1002,
+              display: "flex",
+              alignItems: "center",
+              gap: "16px"
             }}>
-              Total Price: ${totalPrice.toFixed(2)}
+              <span>Total Price: ${totalPrice.toFixed(2)}</span>
+              <button
+                style={{
+                  padding: "8px 20px",
+                  background: "#1677FF",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "6px",
+                  fontWeight: "bold",
+                  fontSize: "1rem",
+                  cursor: "pointer",
+                  boxShadow: "0 2px 6px rgba(0,0,0,0.1)"
+                }}
+                onClick={() => navigate("/checkout")}
+              >
+                Go to Checkout
+              </button>
             </div>
           )}
         </div>
