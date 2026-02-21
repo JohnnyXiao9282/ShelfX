@@ -11,6 +11,14 @@ app.use(express.json());
 
 const PORT = 5001;
 
+// Configure nodemailer transporter once, outside the handler
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
 app.get("/", (req, res) => {
   res.send("ShelfX backend is running.");
 });
@@ -36,7 +44,8 @@ app.post("/api/logout", (req, res) => {
 
 app.post("/api/send-receipt", async (req, res) => {
   const { email, books, total } = req.body;
-  if (!email || !books || !total) return res.status(400).json({ error: "Missing data" });
+  if (!email || !books || !total)
+    return res.status(400).json({ error: "Missing data" });
 
   // Check if env variables are loaded
   if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
@@ -45,22 +54,26 @@ app.post("/api/send-receipt", async (req, res) => {
   }
 
   console.log("Attempting to send email from:", process.env.EMAIL_USER);
-  
+
   // Configure nodemailer (example with Gmail, update with your credentials)
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
       user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS
-    }
+      pass: process.env.EMAIL_PASS,
+    },
   });
 
-  const bookList = books.map(b => `${b.title} (x${b.quantity || 1}): $${b.price.toFixed(2)}`).join("<br>");
+  const bookList = books
+    .map((b) => `${b.title} (x${b.quantity || 1}): $${b.price.toFixed(2)}`)
+    .join("<br>");
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to: email,
     subject: "ShelfX Receipt",
-    html: `<h2>Your ShelfX Receipt</h2><div>${bookList}</div><div style='margin-top:16px;font-weight:bold;'>Total: $${total.toFixed(2)}</div>`
+    html: `<h2>Your ShelfX Receipt</h2><div>${bookList}</div><div style='margin-top:16px;font-weight:bold;'>Total: $${total.toFixed(
+      2
+    )}</div>`,
   };
 
   try {
